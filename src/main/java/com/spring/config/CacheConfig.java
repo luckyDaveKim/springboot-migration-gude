@@ -1,37 +1,46 @@
 package com.spring.config;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.interceptor.KeyGenerator;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.spring.cache.ClassMethodNameKeyGenerator;
 
 @EnableCaching
 @Configuration
 public class CacheConfig extends CachingConfigurerSupport {
 	@Bean
-	public net.sf.ehcache.CacheManager ehCacheManager() {
-		EhCacheManagerFactoryBean factory = new EhCacheManagerFactoryBean();
-		factory.setConfigLocation(new ClassPathResource("/ehcache.xml"));
-		factory.setShared(true);
+	@ConfigurationProperties(prefix = "spring.cache.caffeine")
+	public Map<String, String> cacheTtlByNameMap() {
+		return new HashMap<>();
+	}
 
-		try {
-			return factory.getObject();
-		} catch (Exception e) {
-			throw new IllegalStateException("Failed to create an native ehCache cache manager", e);
-		}
+	@Bean
+	public List<CaffeineCache> caffeineCacheList() {
+		return cacheTtlByNameMap()
+			.entrySet()
+			.stream()
+			.map(cacheEntry -> new CaffeineCache(cacheEntry.getKey(), Caffeine.from(cacheEntry.getValue()).build()))
+			.toList();
 	}
 
 	@Bean
 	@Override
 	public CacheManager cacheManager() {
-		return new EhCacheCacheManager(ehCacheManager());
+		SimpleCacheManager cacheManager = new SimpleCacheManager();
+		cacheManager.setCaches(caffeineCacheList());
+		return cacheManager;
 	}
 
 	@Override
