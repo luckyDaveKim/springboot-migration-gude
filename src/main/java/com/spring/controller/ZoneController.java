@@ -16,7 +16,7 @@ import io.swagger.annotations.Api;
 
 @RestController
 @RequestMapping("/zone")
-@Api(description = "zone 기반 시간 조회 API")
+@Api(tags = "zone 기반 시간 조회 API")
 public class ZoneController {
 	@Autowired
 	private ZoneService zoneService;
@@ -28,7 +28,7 @@ public class ZoneController {
 
 	@RequestMapping(value = "/time", method = GET)
 	public String getTimeByZone(@RequestParam String zoneIdText) {
-		Assert.hasText(zoneIdText);
+		Assert.hasText(zoneIdText, "zoneIdText 값은 필수입니다.");
 		return zoneService.getTimeByZone(zoneIdText);
 	}
 }

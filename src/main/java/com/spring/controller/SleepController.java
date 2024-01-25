@@ -14,7 +14,7 @@ import io.swagger.annotations.Api;
 
 @RestController
 @RequestMapping("/sleep")
-@Api(description = "sleep 처리 API")
+@Api(tags = "sleep 처리 API")
 public class SleepController {
 	@Autowired
 	private SleepService sleepService;

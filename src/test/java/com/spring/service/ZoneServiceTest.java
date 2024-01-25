@@ -7,6 +7,7 @@ import static org.mockito.BDDMockito.*;
 import java.time.ZoneId;
 import java.util.Set;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,13 +19,18 @@ import com.spring.repository.ZoneRepository;
 class ZoneServiceTest {
 	@Mock
 	private ZoneRepository zoneRepository;
-
 	@InjectMocks
 	private ZoneService zoneService;
+	private AutoCloseable closeable;
 
 	@BeforeEach
-	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+	public void before() {
+		closeable = MockitoAnnotations.openMocks(this);
+	}
+
+	@AfterEach
+	public void after() throws Exception {
+		closeable.close();
 	}
 
 	@Test
