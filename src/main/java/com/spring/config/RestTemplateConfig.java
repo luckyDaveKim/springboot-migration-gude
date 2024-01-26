@@ -1,10 +1,14 @@
 package com.spring.config;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.config.SocketConfig;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import static org.apache.hc.core5.util.Timeout.*;
+
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.core5.http.io.SocketConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -15,34 +19,39 @@ public class RestTemplateConfig {
 	@Bean
 	public RequestConfig requestConfig() {
 		return RequestConfig.custom()
-			.setConnectionRequestTimeout(2000)
-			.setConnectTimeout(2000)
-			.setSocketTimeout(1000)
+			.setConnectionRequestTimeout(ofMilliseconds(3000))
 			.build();
 	}
 
 	@Bean
-	public PoolingHttpClientConnectionManager poolingHttpClientConnectionManager() {
-		PoolingHttpClientConnectionManager result = new PoolingHttpClientConnectionManager();
-		result.setMaxTotal(500);
-		result.setDefaultMaxPerRoute(100);
-		return result;
+	public ConnectionConfig connectionConfig() {
+		return ConnectionConfig.custom()
+			.setConnectTimeout(ofMilliseconds(2000))
+			.setSocketTimeout(ofMilliseconds(1000))
+			.build();
+	}
+
+	@Bean
+	public PoolingHttpClientConnectionManager poolingHttpClientConnectionManager(ConnectionConfig connectionConfig) {
+		return PoolingHttpClientConnectionManagerBuilder.create()
+			.setMaxConnTotal(600)
+			.setMaxConnPerRoute(400)
+			.setDefaultConnectionConfig(connectionConfig)
+			.setDefaultSocketConfig(SocketConfig.custom()
+				.setSoTimeout(ofMilliseconds(2000))
+				.setSoKeepAlive(false)
+				.setTcpNoDelay(true)
+				.setSoReuseAddress(true)
+				.build())
+			.build();
 	}
 
 	@Bean
 	public HttpClient httpClient(RequestConfig requestConfig,
 		PoolingHttpClientConnectionManager poolingHttpClientConnectionManager) {
-		SocketConfig socketConfig = SocketConfig.custom()
-			.setSoTimeout(1000)
-			.setSoKeepAlive(true)
-			.setTcpNoDelay(true)
-			.setSoReuseAddress(true)
-			.build();
-
 		return HttpClients.custom()
-			.setConnectionManager(poolingHttpClientConnectionManager)
 			.setDefaultRequestConfig(requestConfig)
-			.setDefaultSocketConfig(socketConfig)
+			.setConnectionManager(poolingHttpClientConnectionManager)
 			.build();
 	}
 
