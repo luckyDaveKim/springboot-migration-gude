@@ -1,34 +1,34 @@
 package com.spring.service;
 
 import static java.time.ZoneId.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.time.ZoneId;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.spring.repository.ZoneRepository;
 
-public class ZoneServiceTest {
+class ZoneServiceTest {
 	@Mock
 	private ZoneRepository zoneRepository;
 
 	@InjectMocks
 	private ZoneService zoneService;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void shouldGetZones() {
+	void shouldGetZones() {
 		// given
 		Set<String> zones = ZoneId.getAvailableZoneIds();
 		given(zoneRepository.getAllZones()).willReturn(zones);
@@ -42,7 +42,7 @@ public class ZoneServiceTest {
 	}
 
 	@Test
-	public void shouldGetEnglishTextTimeByZone() {
+	void shouldGetEnglishTextTimeByZone() {
 		// given
 		given(zoneRepository.getTimeText(any())).willReturn("1991-03-26T00:12:34.56");
 		String zoneIdText = "America/Los_Angeles";
@@ -56,7 +56,7 @@ public class ZoneServiceTest {
 	}
 
 	@Test
-	public void shouldGetKoreanTextTimeByZone() {
+	void shouldGetKoreanTextTimeByZone() {
 		// given
 		given(zoneRepository.getTimeText(any())).willReturn("1991-03-26T12:34:56.78");
 		String zoneIdText = "Asia/Seoul";
@@ -70,7 +70,7 @@ public class ZoneServiceTest {
 	}
 
 	@Test
-	public void shouldParseZoneId() {
+	void shouldParseZoneId() {
 		// given
 		String zoneIdText = "Cuba";
 
@@ -82,7 +82,7 @@ public class ZoneServiceTest {
 	}
 
 	@Test
-	public void shouldSystemDefaultZone_whenZoneIdParseException() {
+	void shouldSystemDefaultZone_whenZoneIdParseException() {
 		// given
 		String zoneIdText = "IS NOT ZONE ID";
 
