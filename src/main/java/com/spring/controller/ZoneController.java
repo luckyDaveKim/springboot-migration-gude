@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.service.ZoneService;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/zone")
-@Api(tags = "zone 기반 시간 조회 API")
+@Tag(name = "zone 기반 시간 조회 API")
 public class ZoneController {
 	@Autowired
 	private ZoneService zoneService;

@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.service.SleepService;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/sleep")
-@Api(tags = "sleep 처리 API")
+@Tag(name = "sleep 처리 API")
 public class SleepController {
 	@Autowired
 	private SleepService sleepService;

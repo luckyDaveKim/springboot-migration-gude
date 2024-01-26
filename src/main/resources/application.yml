@@ -5,8 +5,5 @@ spring:
     caffeine:
       zones: maximumSize=1, expireAfterWrite=10s
       time: maximumSize=2, expireAfterWrite=3s
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
 server:
   port: 80
